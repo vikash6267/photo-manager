@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 import { useEffect } from 'react';
 
-const socket = io('your-websocket-server-url');
+const socket = io('https://photomanager.mahitechnocrafts.in/');
 
 const useLogoutOnSessionExpiry = () => {
   useEffect(() => {

@@ -13,7 +13,7 @@ const useSocket = () => {
   const { sessionID } = useSelector(state => state.profile);
   
   useEffect(() => {
-    const socket = io('http://localhost:4000'); // Update with your server URL
+    const socket = io('https://photomanager.mahitechnocrafts.in'); // Update with your server URL
 
     socket.on('logout', ({ sessionId, message }) => {
       if (sessionID === sessionId) {

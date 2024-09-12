@@ -8,11 +8,32 @@ const socket = io('http://localhost:4000');
 const Chat = ({ receiverId, onClose }) => {
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);
-  const [typingUser, setTypingUser] = useState(null); // Track which user is typing
+  const [typingUser, setTypingUser] = useState(null);
+  const [receiver, setReceiver] = useState(null);
   const { user } = useSelector((state) => state.profile);
   const { token } = useSelector((state) => state.auth);
   const [conversationId, setConversationId] = useState(null);
+ 
+ 
+  const fetchMessages = async () => {
+    if (conversationId) {
+      try {
+        const { data } = await axios.get(
+          `http://localhost:4000/api/v1/chat/messages/${conversationId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setMessages(data);
 
+        // Find the recipient's name based on the messages
+        const recName = data.find((msg) => msg.sender._id !== user._id);
+        if (recName) {
+          setReceiver(recName.sender); // Set the receiver's details
+        }
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    }
+  };
   useEffect(() => {
     const fetchConversation = async () => {
       try {
@@ -28,18 +49,20 @@ const Chat = ({ receiverId, onClose }) => {
       }
     };
 
-    fetchConversation();
-  }, [receiverId, token]);
+  
 
-  // Listen for typing events from other users
+    fetchConversation();
+    fetchMessages();
+  }, [conversationId, token, user._id]);
+
   useEffect(() => {
     socket.on('displayTyping', ({ userId }) => {
-      setTypingUser(userId); // Show the typing user
+      setTypingUser(userId);
     });
 
     socket.on('removeTyping', ({ userId }) => {
       if (typingUser === userId) {
-        setTypingUser(null); // Hide typing indicator when typing stops
+        setTypingUser(null);
       }
     });
 
@@ -52,34 +75,17 @@ const Chat = ({ receiverId, onClose }) => {
   useEffect(() => {
     socket.on('receiveMessage', (newMessage) => {
       if (newMessage.conversationId === conversationId) {
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
+        // setMessages((prevMessages) => [...prevMessages, newMessage]);
+        fetchMessages()
       }
     });
+  }, [conversationId]);
 
-    const fetchMessages = async () => {
-      if (conversationId) {
-        try {
-          const { data } = await axios.get(
-            `http://localhost:4000/api/v1/chat/messages/${conversationId}`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
-          setMessages(data);
-        } catch (error) {
-          console.error('Error fetching messages:', error);
-        }
-      }
-    };
-
-    fetchMessages();
-  }, [conversationId, token]);
-
-  // Emit typing event
   const handleTyping = (e) => {
     setMessage(e.target.value);
     if (!typingUser) {
       socket.emit('typing', conversationId, user._id);
     }
-    // Set a timeout to stop typing after user stops typing for a while
     clearTimeout(window.typingTimeout);
     window.typingTimeout = setTimeout(() => {
       socket.emit('stopTyping', conversationId, user._id);
@@ -90,7 +96,7 @@ const Chat = ({ receiverId, onClose }) => {
     try {
       socket.emit('sendMessage', { conversationId, sender: user._id, message });
       setMessage('');
-      socket.emit('stopTyping', conversationId, user._id); // Stop typing when message is sent
+      socket.emit('stopTyping', conversationId, user._id);
     } catch (error) {
       console.error('Error sending message:', error);
     }
@@ -99,16 +105,18 @@ const Chat = ({ receiverId, onClose }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
       <div className="bg-white w-80 h-96 rounded-lg shadow-lg flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold">Chat</h2>
+        <div className="flex items-center justify-between p-4 border-b bg-blue-600 text-white">
+          <h2 className="text-lg font-semibold">
+            {receiver ? receiver.name : 'Chat'}
+          </h2>
           <button
             onClick={onClose}
-            className="text-gray-600 hover:text-gray-900"
+            className="text-white hover:text-gray-200"
           >
             &times;
           </button>
         </div>
-        <div className="flex-1 p-4 overflow-y-auto">
+        <div className="flex-1 p-4 overflow-y-auto bg-gray-100">
           {messages.map((msg) => (
             <div
               key={msg._id}
@@ -133,7 +141,7 @@ const Chat = ({ receiverId, onClose }) => {
             </div>
           )}
         </div>
-        <div className="flex p-4 border-t">
+        <div className="flex p-4 border-t bg-gray-200">
           <input
             type="text"
             value={message}

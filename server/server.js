@@ -77,8 +77,11 @@ io.on('connection', (socket) => {
     socket.to(conversationId).emit('removeTyping', { userId });
   });
 
-  socket.on('sendMessage', (messageData) => {
+  socket.on('sendMessage', async(messageData) => {
     const { conversationId, sender, message } = messageData;
+
+       const newMessage = new Chat({ conversationId, sender, message });
+       await newMessage.save();
     io.to(conversationId).emit('receiveMessage', {
       conversationId,
       sender,

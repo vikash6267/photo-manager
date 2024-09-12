@@ -13,7 +13,6 @@ const ConversationList = ({ onConversationSelect, onUserSelect }) => {
         const { data } = await axios.get('http://localhost:4000/api/v1/chat/conversations', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        console.log(data)
         setConversations(data);
       } catch (error) {
         console.error('Error fetching conversations:', error);
@@ -24,29 +23,39 @@ const ConversationList = ({ onConversationSelect, onUserSelect }) => {
   }, [token]);
 
   return (
-    <div className="p-4">
-      <h2 className="text-lg font-semibold">Conversations</h2>
+    <div className="p-4 bg-gray-50 rounded-lg shadow-md">
+      <h2 className="text-xl font-semibold mb-4">Conversations</h2>
       {conversations.map(conversation => (
         <div
           key={conversation._id}
-          className="p-2 border-b cursor-pointer hover:bg-gray-100"
+          className="flex items-center p-3 border-b border-gray-200 cursor-pointer hover:bg-gray-100 rounded-lg"
          
         >
           {conversation.participants
             .filter(p => p._id !== user._id) // Exclude current user
             .map(participant => (
-              <div key={participant._id} className={`${conversation.unreadCount > 0 ? "font-bold" : ""}`} onClick={() => onUserSelect(participant._id)}>
-                {participant.name}
-             <div >
-             {conversation.unreadCount > 1 ? (
-                  <span className="ml-2 text-red-500">2+ Unread Message</span>
-                ) : conversation.unreadCount === 1 ? (
-                  <span className="ml-2 text-red-500">1 Unread Message</span>
-                ) :  (
-                  <span className="ml-2 text-red-500">No Unread Message</span>
-                )}
-
-             </div>
+              <div
+                key={participant._id}
+                className={`flex items-center space-x-3 ${conversation.unreadCount > 0 ? "font-bold" : ""}`}
+                onClick={() => onUserSelect(participant._id)}
+              >
+                <img
+                  src={participant.image || 'default-avatar.png'} // Replace with a default avatar if image is not available
+                  alt={participant.name}
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+                <div className="flex-1">
+                  <div className="text-lg font-medium">{participant.name}</div>
+                  <div className="text-sm text-gray-600">
+                    {conversation.unreadCount > 1 ? (
+                      <span className="text-red-500">2+ Unread Messages</span>
+                    ) : conversation.unreadCount === 1 ? (
+                      <span className="text-red-500">1 Unread Message</span>
+                    ) : (
+                      <span>No Unread Messages</span>
+                    )}
+                  </div>
+                </div>
               </div>
             ))}
         </div>

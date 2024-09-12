@@ -23,7 +23,7 @@ const UserSearch = ({ onUserSelect }) => {
 
     setLoading(true);
     try {
-      const { data } = await axios.get('http://localhost:4000/api/v1/chat/serach', { params: { query } });
+      const { data } = await axios.get('https://photomanager.mahitechnocrafts.in/api/v1/chat/serach', { params: { query } });
       setUsers(data);
       console.log(data)
     } catch (error) {

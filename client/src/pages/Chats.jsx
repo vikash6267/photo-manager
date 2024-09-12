@@ -3,7 +3,7 @@ import io from "socket.io-client";
 import axios from "axios";
 import { useSelector } from "react-redux";
 
-const socket = io("http://localhost:4000");
+const socket = io("https://photomanager.mahitechnocrafts.in");
 
 const Chat = ({ receiverId, onClose }) => {
   const [message, setMessage] = useState("");
@@ -21,7 +21,7 @@ const Chat = ({ receiverId, onClose }) => {
     if (conversationId) {
       try {
         const { data } = await axios.get(
-          `http://localhost:4000/api/v1/chat/messages/${conversationId}`,
+          `https://photomanager.mahitechnocrafts.in/api/v1/chat/messages/${conversationId}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setMessages(data);
@@ -41,7 +41,7 @@ const Chat = ({ receiverId, onClose }) => {
     const fetchConversation = async () => {
       try {
         const { data } = await axios.post(
-          "http://localhost:4000/api/v1/chat/conversation",
+          "https://photomanager.mahitechnocrafts.in/api/v1/chat/conversation",
           { participantId: receiverId },
           { headers: { Authorization: `Bearer ${token}` } }
         );

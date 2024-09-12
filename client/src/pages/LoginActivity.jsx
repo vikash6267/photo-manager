@@ -1,17 +1,14 @@
-import React, { useEffect, useState } from 'react'
-import { getSessions, logout, logoutSession } from '../service/operations/user'
-import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-
+import React, { useEffect, useState } from 'react';
+import { getSessions, logout, logoutSession } from '../service/operations/user';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 function LoginActivity() {
-  const {  sessionID } = useSelector(state => state.profile);
+  const { sessionID } = useSelector(state => state.profile);
   const { token } = useSelector(state => state.auth);
   const [sessions, setSessions] = useState([]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-
 
   const fetchSession = async () => {
     try {
@@ -58,8 +55,13 @@ function LoginActivity() {
           </thead>
           <tbody>
             {sessions.map((session) => (
-              <tr key={session.sessionId}>
-                <td className="py-2 px-4 border-b">{session.device}</td>
+              <tr
+                key={session.sessionId}
+                className={session.sessionId === sessionID ? 'bg-green-100' : ''}
+              >
+                <td className="py-2 px-4 border-b">
+                  {session.device} {session.sessionId === sessionID ? <span className="text-green-600 font-bold">(My Device)</span> : ''}
+                </td>
                 <td className="py-2 px-4 border-b">{session.ipAddress}</td>
                 <td className="py-2 px-4 border-b">{session.location}</td>
                 <td className="py-2 px-4 border-b">{new Date(session.loginTime).toLocaleString()}</td>

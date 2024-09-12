@@ -5,7 +5,7 @@ const BASE_URL = process.env.REACT_API_URL
 
 
 // const SOCKET_SERVER_URL = 'http://localhost:4000'; // Ensure this matches your server URL
-const SOCKET_SERVER_URL = 'https://photomanagerbyvikash.vercel.app'; // Ensure this matches your server URL
+const SOCKET_SERVER_URL = 'https://photomanager.mahitechnocrafts.in/'; // Ensure this matches your server URL
 const socket = io(SOCKET_SERVER_URL, {
   withCredentials: true,
   transports: ['websocket', 'polling']

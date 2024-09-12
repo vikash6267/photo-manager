@@ -4,7 +4,7 @@ const initialState = {
   signupData: null,
   loading: false,
   token: localStorage.getItem("token") ? JSON.parse(localStorage.getItem("token")) : null,
-  userReferalBy : null
+  typing : false
 };
 
 const authSlice = createSlice({
@@ -20,7 +20,7 @@ const authSlice = createSlice({
     setToken(state, value) {
       state.token = value.payload;
     },
-    setReferN(state, value) {
+    setTyping(state, value) {
       state.userReferalBy = value.payload;
 
     }

@@ -66,17 +66,30 @@ io.on('connection', (socket) => {
     socket.join(conversationId);
   });
 
-  socket.on('sendMessage', async (data) => {
-    const { conversationId, sender, message } = data;
-    const newMessage = new Chat({ conversationId, sender, message });
-    await newMessage.save();
-    io.to(conversationId).emit('receiveMessage', newMessage);
+  socket.on('typing', (conversationId, userId) => {
+    console.log("typing")
+    socket.to(conversationId).emit('displayTyping', { userId });
+  });
+
+
+  
+  socket.on('stopTyping', (conversationId, userId) => {
+    socket.to(conversationId).emit('removeTyping', { userId });
+  });
+
+  socket.on('sendMessage', (messageData) => {
+    const { conversationId, sender, message } = messageData;
+    io.to(conversationId).emit('receiveMessage', {
+      conversationId,
+      sender,
+      message,
+    });
   });
 
   socket.on('disconnect', () => {
     console.log('User disconnected');
   });
-});
+})
 
 
 // Start server and Socket.IO

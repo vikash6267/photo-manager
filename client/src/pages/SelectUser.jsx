@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 
-const ConversationList = ({ onConversationSelect,onUserSelect }) => {
+const ConversationList = ({ onConversationSelect, onUserSelect }) => {
   const [conversations, setConversations] = useState([]);
   const { token } = useSelector(state => state.auth);
   const { user } = useSelector(state => state.profile);
@@ -13,8 +13,8 @@ const ConversationList = ({ onConversationSelect,onUserSelect }) => {
         const { data } = await axios.get('http://localhost:4000/api/v1/chat/conversations', {
           headers: { Authorization: `Bearer ${token}` }
         });
+        console.log(data)
         setConversations(data);
-        console.log(data);
       } catch (error) {
         console.error('Error fetching conversations:', error);
       }
@@ -30,13 +30,23 @@ const ConversationList = ({ onConversationSelect,onUserSelect }) => {
         <div
           key={conversation._id}
           className="p-2 border-b cursor-pointer hover:bg-gray-100"
-          // onClick={() => onConversationSelect(conversation)}
+         
         >
           {conversation.participants
             .filter(p => p._id !== user._id) // Exclude current user
             .map(participant => (
-              <div key={participant._id} className="text-gray-700" onClick={() => onUserSelect(participant._id)}>
+              <div key={participant._id} className={`${conversation.unreadCount > 0 ? "font-bold" : ""}`} onClick={() => onUserSelect(participant._id)}>
                 {participant.name}
+             <div >
+             {conversation.unreadCount > 1 ? (
+                  <span className="ml-2 text-red-500">2+ Unread Message</span>
+                ) : conversation.unreadCount === 1 ? (
+                  <span className="ml-2 text-red-500">1 Unread Message</span>
+                ) :  (
+                  <span className="ml-2 text-red-500">No Unread Message</span>
+                )}
+
+             </div>
               </div>
             ))}
         </div>

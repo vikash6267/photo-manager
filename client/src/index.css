@@ -36,3 +36,10 @@ body {
 *:hover::-webkit-scrollbar-thumb {
   visibility: visible;
 }
+
+
+/* Add to your CSS or Tailwind configuration */
+.unread-count {
+  color: #f87171; /* Tailwind red-400 */
+  font-weight: bold;
+}

@@ -4,6 +4,8 @@ const Conversation = require('../models/conversationSchema');
 const Chat = require('../models/chtasSchema');
 const {auth} = require('../middlewares/auth');
 const { searchUsers } = require('../controllers/chats');
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 // Create or get a conversation
 router.post('/conversation', auth, async (req, res) => {
@@ -34,21 +36,42 @@ console.log("first")
     }
 });
 
-
 const getUserConversations = async (req, res) => {
-  const userId = req.user.id;
+  const userId = req.user.id; // User ID as a string
 
   try {
-    // Find conversations where the user is a participant
+    // Fetch conversations where the user is a participant
     const conversations = await Conversation.find({
       participants: userId
-    }).populate('participants', 'name'); // Populate participants with their names
+    }).populate('participants', 'name'); // Assuming participants have 'name' field
 
-    res.status(200).json(conversations);
+    // Extract conversation IDs
+    const conversationIds = conversations.map(conv => conv._id);
+
+    // Fetch chats related to these conversations
+    const chats = await Chat.find({
+      conversationId: { $in: conversationIds }
+    });
+
+    // Compute unread counts manually
+    const conversationsWithUnreadCounts = conversations.map(conv => {
+      const conversationChats = chats.filter(chat => chat.conversationId.toString() === conv._id.toString());
+      const unreadCount = conversationChats.filter(chat => !chat.read && chat.sender.toString() !== userId).length;
+      return {
+        ...conv._doc, // Include conversation fields
+        unreadCount
+      };
+    });
+
+    res.status(200).json(conversationsWithUnreadCounts);
   } catch (error) {
+    console.error('Error fetching conversations:', error); // Log the full error for debugging
     res.status(500).json({ message: 'Error fetching conversations', error });
   }
 };
+
+
+
 
 router.get('/conversations', auth, getUserConversations);
 

@@ -10,6 +10,7 @@ const UserSearch = ({ onUserSelect }) => {
     try {
       const { data } = await axios.get(`http://localhost:4000/api/v1/chat/serach`, { params: { query } });
       setUsers(data);
+      
     } catch (error) {
       console.error('Error searching users:', error);
     }

@@ -11,12 +11,12 @@ const { cloudinaryConnect } = require('./config/cloudinary');
 const imageRoute = require('./routes/imageRoute');
 const userRoute = require('./routes/userRoute');
 const folderRoute = require('./routes/folderRoute');
-
+const chatRoutes = require("./routes/chat");
 dotenv.config();
 database.connect();
 const app = express();
 const PORT = process.env.PORT || 4000;
-
+const Chat = require("./models/chtasSchema")
 // Create HTTP server and integrate Socket.IO
 const server = http.createServer(app);
 const io = socketIO(server, {
@@ -49,7 +49,7 @@ cloudinaryConnect();
 app.use('/api/v1/user', userRoute);
 app.use('/api/v1/folder', folderRoute);
 app.use('/api/v1/image', imageRoute);
-
+app.use("/api/v1/chat", chatRoutes);
 // Test route
 app.get('/', (req, res) => {
   res.json({
@@ -60,15 +60,23 @@ app.get('/', (req, res) => {
 
 // Socket.IO connection
 io.on('connection', (socket) => {
-  console.log('New client connected', socket.id);
+  console.log('A user connected');
+
+  socket.on('joinConversation', (conversationId) => {
+    socket.join(conversationId);
+  });
+
+  socket.on('sendMessage', async (data) => {
+    const { conversationId, sender, message } = data;
+    const newMessage = new Chat({ conversationId, sender, message });
+    await newMessage.save();
+    io.to(conversationId).emit('receiveMessage', newMessage);
+  });
 
   socket.on('disconnect', () => {
-    console.log('Client disconnected', socket.id);
+    console.log('User disconnected');
   });
 });
-
-
-
 
 
 // Start server and Socket.IO

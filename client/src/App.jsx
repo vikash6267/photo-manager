@@ -14,6 +14,9 @@ import MainSidebar from "./components/dashboard/index";
 import Chats from "./pages/Chats";
 import MyFolder from "./pages/MyFolder";
 import SingleFolder from "./pages/SingleFolder";
+import SearchUsers from "./pages/SearchUser";
+import ChatContainer from "./pages/SelectUser";
+import ChatsApp from "./pages/MainChat";
 
 function App() {
   const { token } = useSelector((state) => state.auth);
@@ -41,6 +44,22 @@ function App() {
             </OpenRoute>
           }
         />
+        <Route
+          path="/ChatContainer"
+          element={
+            <PrivateRoute>
+              <ChatContainer />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/ss"
+          element={
+            <PrivateRoute>
+              <SearchUsers />
+            </PrivateRoute>
+          }
+        />
 
         <Route
           element={
@@ -62,7 +81,7 @@ function App() {
             path="/chats"
             element={
               <PrivateRoute>
-                <Chats />
+                <ChatsApp />
               </PrivateRoute>
             }
           />

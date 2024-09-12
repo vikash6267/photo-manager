@@ -1,7 +1,8 @@
 import io from 'socket.io-client';
 import { useEffect } from 'react';
+const BASE_URL = 'http://localhost:4000'
 
-const socket = io('https://photomanager.mahitechnocrafts.in/');
+const socket = io(BASE_URL);
 
 const useLogoutOnSessionExpiry = () => {
   useEffect(() => {

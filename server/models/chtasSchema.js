@@ -1,25 +1,24 @@
 const mongoose = require('mongoose');
 
-// Define the chat schema
-const chatSchema = new mongoose.Schema(
-  {
-    participants: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-      }
-    ],
-    messages: [
-      {
-        sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-        content: { type: String, required: true },
-        timestamp: { type: Date, default: Date.now },
-      }
-    ],
+const chatSchema = new mongoose.Schema({
+  conversationId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Conversation',
+    required: true,
   },
-  { timestamps: true }
-);
+  sender: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  message: {
+    type: String,
+    required: true,
+  },
+  read: {
+    type: Boolean,
+    default: false,
+  },
+}, { timestamps: true });
 
-// Export the Mongoose model for the chat schema
 module.exports = mongoose.model('Chat', chatSchema);

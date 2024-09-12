@@ -7,7 +7,8 @@ const{
     signup,
     fetchMyProfile,
     logoutSession,
-    getSessions
+    getSessions,
+    getCurrentUser
 } = require("../controllers/user")
 const{
     auth,
@@ -22,5 +23,5 @@ router.post("/login", login)
 router.get("/fetchMyProfile",auth,verifySession,fetchMyProfile )
 router.post('/logout', auth,verifySession, logoutSession);
 router.get('/getsession', auth,verifySession, getSessions);
-
+router.get("/me", auth, getCurrentUser);
 module.exports = router

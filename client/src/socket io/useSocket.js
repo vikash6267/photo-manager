@@ -11,9 +11,10 @@ const useSocket = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { sessionID } = useSelector(state => state.profile);
+const BASE_URL = 'http://localhost:4000/'
   
   useEffect(() => {
-    const socket = io('https://photomanager.mahitechnocrafts.in'); // Update with your server URL
+    const socket = io(BASE_URL); // Update with your server URL
 
     socket.on('logout', ({ sessionId, message }) => {
       if (sessionID === sessionId) {

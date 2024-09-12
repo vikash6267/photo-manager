@@ -5,6 +5,7 @@ const Chat = require('../models/chtasSchema');
 const {auth} = require('../middlewares/auth');
 const { searchUsers } = require('../controllers/chats');
 const mongoose = require('mongoose');
+const { getIO } = require('../socketIO/socket');
 const ObjectId = mongoose.Types.ObjectId;
 
 // Create or get a conversation
@@ -43,7 +44,10 @@ const getUserConversations = async (req, res) => {
     // Fetch conversations where the user is a participant
     const conversations = await Conversation.find({
       participants: userId
-    }).populate('participants', 'name'); // Assuming participants have 'name' field
+    }).populate({
+        path: 'participants',
+  select: 'name image'
+    }); // Assuming participants have 'name' field
 
     // Extract conversation IDs
     const conversationIds = conversations.map(conv => conv._id);
@@ -78,13 +82,25 @@ router.get('/conversations', auth, getUserConversations);
 // Get messages in a conversation
 router.get('/messages/:conversationId', auth, async (req, res) => {
   const { conversationId } = req.params;
+  const { id: userId } = req.user; // Current user's ID
+
   try {
-    const messages = await Chat.find({ conversationId }).populate('sender', 'name').sort({ createdAt: 1 });
+    // Fetch and sort the messages by creation time
+    const messages = await Chat.find({ conversationId }).populate({path:'sender' , select:"name image"}).sort({ createdAt: 1 });
+
+    // Update all unread messages to read, except for the ones sent by the current user
+    await Chat.updateMany(
+      { conversationId, read: false, sender: { $ne: userId } }, // Exclude user's own messages
+      { $set: { read: true } }
+    );
+
     res.json(messages);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+
+
 
 router.get('/serach',searchUsers)
 

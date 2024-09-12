@@ -55,6 +55,7 @@ exports.signup = asyncHandler(async (req, res) => {
       name,
       email,
       contactNumber,
+      image:`https://api.dicebear.com/5.x/initials/svg?seed=${name}`,
       password: hashedPassword,
     });
 

@@ -28,17 +28,17 @@ const ChatsApp = () => {
     if (selectedConversation) {
       return selectedConversation.participants.find(id => id !== user._id);
     }
-    console.log(selectedConversation)
+  
     return selectedUser;
   };
 
   return (
     <div className="flex h-screen">
-      <div className="w-1/3 border-r p-4">
+      <div className="w-screen border-r p-4">
         <UserSearch onUserSelect={handleUserSelect} />
         <ConversationList onConversationSelect={handleConversationSelect} onUserSelect={handleUserSelect} />
       </div>
-      <div className="w-2/3 p-4">
+      <div className=" p-4">
         {getReceiverId() && (
           <Chat receiverId={getReceiverId()} onClose={closeChat} />
         )}

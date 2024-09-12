@@ -80,6 +80,9 @@ io.on('connection', (socket) => {
   socket.on('sendMessage', async(messageData) => {
     const { conversationId, sender, message } = messageData;
 
+    if(message ===""){
+      return
+    }
        const newMessage = new Chat({ conversationId, sender, message });
        await newMessage.save();
     io.to(conversationId).emit('receiveMessage', {
@@ -87,6 +90,23 @@ io.on('connection', (socket) => {
       sender,
       message,
     });
+
+    io.emit('new_message', { conversationId, message });
+  });
+
+  socket.on('markMessagesAsRead', async ({ conversationId, userId }) => {
+    try {
+      // Mark unread messages as read for the current conversation
+      await Chat.updateMany(
+        { conversationId, sender: { $ne: userId }, read: false },
+        { $set: { read: true } }
+      );
+
+      // Emit the message_read event to the conversation room
+      io.to(conversationId).emit('message_read', { conversationId });
+    } catch (error) {
+      console.error('Error marking messages as read:', error);
+    }
   });
 
   socket.on('disconnect', () => {

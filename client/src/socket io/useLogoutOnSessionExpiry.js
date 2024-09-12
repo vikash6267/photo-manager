@@ -1,6 +1,7 @@
 import io from 'socket.io-client';
 import { useEffect } from 'react';
-const BASE_URL = 'http://localhost:4000'
+const BASE_URL = 'https://photomanagerbyvikash.vercel.app'
+// const BASE_URL = 'http://localhost:4000'
 
 const socket = io(BASE_URL);
 

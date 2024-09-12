@@ -11,7 +11,8 @@ const useSocket = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { sessionID } = useSelector(state => state.profile);
-const BASE_URL = 'http://localhost:4000/'
+const BASE_URL = 'https://photomanagerbyvikash.vercel.app'
+// const BASE_URL = 'http://localhost:4000/'
   
   useEffect(() => {
     const socket = io(BASE_URL); // Update with your server URL

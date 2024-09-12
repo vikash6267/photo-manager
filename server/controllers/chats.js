@@ -6,13 +6,23 @@ const User = require("../models/User");
 const searchUsers = async (req, res) => {
   const { query } = req.query;
 
+
+
+  console.log("first")
+  
+  if(query===""){
+return res.status(403).json({
+  message:"Iput meddtory"
+})
+
+}
   try {
     const users = await User.find({
       $or: [
         { email: { $regex: query, $options: "i" } },
         { name: { $regex: query, $options: "i" } },
       ],
-    }).select("name email");
+    }).select("name email image");
 
     res.status(200).json(users);
   } catch (error) {

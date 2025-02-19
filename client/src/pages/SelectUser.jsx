@@ -11,7 +11,7 @@ const ConversationList = ({ onConversationSelect, onUserSelect }) => {
 
   const fetchConversations = async () => {
     try {
-      const { data } = await axios.get('https://photomanager.mahitechnocrafts.in/api/v1/chat/conversations', {
+      const { data } = await axios.get('http://localhost:4000/api/v1/chat/conversations', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setConversations(data);
@@ -22,7 +22,7 @@ const ConversationList = ({ onConversationSelect, onUserSelect }) => {
 
   useEffect(() => {
     // Connect to Socket.IO server
-    const newSocket = io('https://photomanager.mahitechnocrafts.in/', {
+    const newSocket = io('http://localhost:4000/', {
       query: { token }, // Pass the auth token if required
     });
     setSocket(newSocket);
@@ -37,6 +37,7 @@ const ConversationList = ({ onConversationSelect, onUserSelect }) => {
 
   useEffect(() => {
     if (socket) {
+      console.log("agya")
       // Listen for message read events
       socket.on('message_read', () => {
         fetchConversations(); // Update conversations when messages are read
